@@ -9,6 +9,7 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "prettier": "^3.7.4",
     "turbo": "^2.9.6",
     "typescript": "^6.0.2"
@@ -24,6 +25,7 @@
   "dependencies": {
     "@nestjs/config": "^4.0.4",
     "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "^2.1.1",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/passport": "^11.0.5",
     "@tailwindcss/postcss": "^4.2.2",

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-
+import { CoreModule } from './core/core.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -14,13 +14,17 @@ import { ClassModule } from './modules/class/class.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 import { SubstitutionModule } from './modules/substitution/substitution.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import * as path from 'path';
 
 @Module({
   imports: [
     // 🔥 CORRECT ENV LOADING (MONOREPO FIX)
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', // ✅ FIXED HERE
+      envFilePath: [
+        path.resolve(process.cwd(), '.env'),
+        path.resolve(process.cwd(), 'apps/api/.env'),
+      ],
     }),
 
     // 🔥 DATABASE CONNECTION (PROPER WAY)
@@ -42,6 +46,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     }),
 
     // 🔹 Feature Modules
+    CoreModule,
     AuthModule,
     SchoolModule,
     UserModule,
