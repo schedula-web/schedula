@@ -1,10 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
+import { BaseSchemaOptions } from '../../../core/database/base.schema';
 
-@Schema({
-  timestamps: true,
-  versionKey: false,
-})
+@Schema(BaseSchemaOptions)
 export class School {
   _id!: Types.ObjectId;
 

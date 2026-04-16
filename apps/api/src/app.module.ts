@@ -1,10 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CoreModule } from './core/core.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
 import { AuthModule } from './modules/auth/auth.module';
 import { SchoolModule } from './modules/school/school.module';
 import { UserModule } from './modules/user/user.module';

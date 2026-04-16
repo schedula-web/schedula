@@ -2,12 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolRepository } from './repository/school.repository';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class SchoolService {
-  constructor(private readonly repo: SchoolRepository) {}
+  constructor(
+    private readonly repo: SchoolRepository,
+    private readonly logger: AppLogger,
+  ) {}
 
   create(dto: CreateSchoolDto) {
+    this.logger.log(`Creating school: ${dto.name}`, 'SchoolService');
     return this.repo.create(dto);
   }
 
