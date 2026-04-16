@@ -1,11 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
-import { BaseSchemaOptions } from '../../../core/database/base.schema';
+import { BaseSchema } from '../../../core/database/base.schema';
 
-@Schema(BaseSchemaOptions)
-export class School {
-  _id!: Types.ObjectId;
-
+@Schema()
+export class School extends BaseSchema {
   @Prop({ required: true, trim: true, index: true })
   name!: string;
 }

@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema, Types } from 'mongoose';
-import { BaseSchemaOptions } from '../../../core/database/base.schema';
+import { Schema as MongooseSchema, Types } from 'mongoose';
+import { BaseSchema } from '../../../core/database/base.schema';
 
-@Schema(BaseSchemaOptions)
-export class Teacher extends Document {
+@Schema() // ✅ no BaseSchemaOptions here
+export class Teacher extends BaseSchema { // ✅ extend instead
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'School', index: true, required: true })
   schoolId!: Types.ObjectId;
 
@@ -38,42 +38,16 @@ export class Teacher extends Document {
   subjectIds?: Types.ObjectId[];
 
   @Prop({ type: MongooseSchema.Types.Mixed })
-  availability?: {
-    workingDays?: string[];
-    startTime?: string;
-    endTime?: string;
-    maxPeriodsPerDay?: number;
-    unavailablePeriods?: {
-      date: string;
-      periodLabels: string[];
-      reason?: string;
-    }[];
-  };
+  availability?: any;
 
   @Prop({ type: MongooseSchema.Types.Mixed })
-  substitutionSettings?: {
-    availableForSubstitution?: boolean;
-    maxSubstitutionsPerWeek?: number;
-    preferredSubjectIds?: string[];
-    avoidConsecutiveSubstitutions?: boolean;
-  };
+  substitutionSettings?: any;
 
   @Prop({ type: MongooseSchema.Types.Mixed })
-  workloadRules?: {
-    maxPeriodsPerWeek?: number;
-    preferredFreePeriod?: string;
-    allowExtraLoad?: boolean;
-  };
+  workloadRules?: any;
 
   @Prop({ type: MongooseSchema.Types.Mixed })
-  workload?: {
-    dailyPeriods: number;
-    weeklyPeriods: number;
-    monthlyPeriods: number;
-    maxAllowedPeriods: number;
-    workloadStatus: string;
-    substitutionCount: number;
-  };
+  workload?: any;
 }
 
 export const TeacherSchema = SchemaFactory.createForClass(Teacher);
