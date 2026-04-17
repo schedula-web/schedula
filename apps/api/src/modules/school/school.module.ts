@@ -7,12 +7,13 @@ import { SchoolRepository } from './repository/school.repository';
 
 @Module({
   imports: [
+    // 📖 SCHEMA: Register the School model with Mongoose
     MongooseModule.forFeature([
       { name: School.name, schema: SchoolSchema },
     ]),
   ],
-  controllers: [SchoolController],
-  providers: [SchoolService, SchoolRepository],
-  exports: [SchoolService],
+  controllers: [SchoolController],  //entry points
+  providers: [SchoolService, SchoolRepository], //business logic
+  exports: [SchoolService], //make available to other modules
 })
-export class SchoolModule {}
+export class SchoolModule { }

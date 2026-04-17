@@ -9,10 +9,12 @@ export class SchoolService {
   constructor(
     private readonly repo: SchoolRepository,
     private readonly logger: AppLogger,
-  ) {}
+  ) { }
 
   create(dto: CreateSchoolDto) {
+    // 🪵 LOG: Records business logic started
     this.logger.log(`Creating school: ${dto.name}`, 'SchoolService');
+    // (The Service doesn't know how to talk to MongoDB itself!), jummps to repository file
     return this.repo.create(dto);
   }
 

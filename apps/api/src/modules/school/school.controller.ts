@@ -14,14 +14,16 @@ import { AppLogger } from '../../core/logger/logger.service';
 
 @Controller('schools')
 export class SchoolController {
+  // 💉 INJECTION: The Controller asks for the Service
   constructor(
     private readonly service: SchoolService,
     private readonly logger: AppLogger,
-  ) {}
+  ) { }
 
   @Post()
   create(@Body() dto: CreateSchoolDto) {
     this.logger.log('POST /schools', 'SchoolController');
+    // 🏂 JUMP: The controller hands the data to the Service
     return this.service.create(dto);
   }
 

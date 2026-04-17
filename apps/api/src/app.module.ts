@@ -1,4 +1,5 @@
 import { Logger, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CoreModule } from './core/core.module';
@@ -13,6 +14,8 @@ import { ClassModule } from './modules/class/class.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 import { SubstitutionModule } from './modules/substitution/substitution.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 import * as path from 'path';
 
 @Module({
@@ -58,6 +61,16 @@ import * as path from 'path';
   ],
 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD, // Tell NestJS: "Use this as a global guard"
+      useClass: JwtAuthGuard, // Register the JWT gate
+    },
+    {
+      provide: APP_GUARD, // Tell NestJS: "Use this as a global guard"
+      useClass: RolesGuard, // Register the Role gate
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule { }

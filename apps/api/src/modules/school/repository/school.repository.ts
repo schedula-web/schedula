@@ -8,12 +8,13 @@ import { AppLogger } from '../../../core/logger/logger.service';
 export class SchoolRepository {
   constructor(
     @InjectModel(School.name)
-    private readonly schoolModel: Model<School>,
+    private readonly schoolModel: Model<School>,  // 💉 INJECTS THE BLUEPRINT
     private readonly logger: AppLogger,
-  ) {}
+  ) { }
 
   create(data: Partial<School>) {
     this.logger.log(`Saving school to database`, 'SchoolRepository');
+    // 🏂 JUMP 3: Finally talks to the actual Database!
     return this.schoolModel.create(data);
   }
 
