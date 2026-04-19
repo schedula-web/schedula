@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { BaseSchema } from '../../../core/database/base.schema';
+import { UserRole } from '../../../core/constants/enums';
 
-@Schema()
+@Schema({ versionKey: false })
 export class User extends BaseSchema {
   @Prop({ required: true, index: true, trim: true })
   schoolName!: string;
@@ -25,7 +26,10 @@ export class User extends BaseSchema {
   password!: string;
 
   @Prop({ unique: true, trim: true })
-  schedulaId!: string;  // Keep as schedulaId as you want
+  schedulaId!: string;
+
+  @Prop({ required: true, enum: UserRole, default: UserRole.ADMIN })
+  role!: UserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,11 +1,12 @@
-import { IsNotEmpty, IsString, IsEmail, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsOptional, ValidateIf, IsEnum } from 'class-validator';
+import { UserRole } from '../../../core/constants/enums';
 
 export class LoginUserDto {
-    @IsOptional()
+    @ValidateIf(o => !o.schedulaId)
     @IsEmail()
     email?: string;
 
-    @IsOptional()
+    @ValidateIf(o => !o.email)
     @IsString()
     @IsNotEmpty()
     schedulaId?: string;
@@ -13,4 +14,8 @@ export class LoginUserDto {
     @IsString()
     @IsNotEmpty()
     password!: string;
+
+    @IsEnum(UserRole)
+    @IsNotEmpty()
+    role!: UserRole;
 }
