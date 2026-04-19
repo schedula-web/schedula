@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { BaseSchema } from '../../../core/database/base.schema';
 
-@Schema() // ✅ no BaseSchemaOptions here
+@Schema({ versionKey: false })
 export class Teacher extends BaseSchema { // ✅ extend instead
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'School', index: true, required: true })
   schoolId!: Types.ObjectId;

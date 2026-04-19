@@ -2,29 +2,38 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../../core/constants/enums';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {
-  }
+  constructor(
+    private reflector: Reflector,
+    private logger: AppLogger
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    // 1. Logic: What roles are REQUIRED for this route? (e.g., ['ADMIN'])
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    // 2. Logic: If no @Roles label is found, anyone can pass (after JWT)
+    
     if (!requiredRoles) {
       return true;
     }
-    // 3. Logic: Get the 'user' object that JwtStrategy just created
-    const { user } = context.switchToHttp().getRequest();
+    
+    const req = context.switchToHttp().getRequest();
+    const { user } = req;
 
     if (!user || !user.role) {
+      this.logger.warn(`Forbidden: User missing or role missing for ${req.method} ${req.url}`, 'RolesGuard');
       return false;
     }
-    // 4. Logic: Compare the user's role to the required roles
-    return requiredRoles.some((role) => user.role === role);
+    
+    const isAllowed = requiredRoles.some((role) => user.role === role);
+    if (!isAllowed) {
+      this.logger.warn(`Forbidden: User with role '${user.role}' attempted to access ${req.method} ${req.url} (requires: ${requiredRoles.join(',')})`, 'RolesGuard');
+    }
+    
+    return isAllowed;
   }
 }

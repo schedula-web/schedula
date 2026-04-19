@@ -6,7 +6,6 @@ import { CoreModule } from './core/core.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { SchoolModule } from './modules/school/school.module';
 import { UserModule } from './modules/user/user.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { SubjectModule } from './modules/subject/subject.module';
@@ -50,7 +49,6 @@ import * as path from 'path';
     // 🔹 Feature Modules
     CoreModule,
     AuthModule,
-    SchoolModule,
     UserModule,
     TeacherModule,
     SubjectModule,
