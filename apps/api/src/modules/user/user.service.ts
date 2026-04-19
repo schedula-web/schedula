@@ -42,6 +42,14 @@ export class UserService {
     return this.userRepository.findByEmailWithPassword(email);
   }
 
+  async findBySchedulaId(schedulaId: string) {
+    return this.userRepository.findBySchedulaId(schedulaId);
+  }
+
+  async findBySchedulaIdWithPassword(schedulaId: string) {
+    return this.userRepository.findBySchedulaIdWithPassword(schedulaId);
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.update(id, updateUserDto);
     if (!user) {

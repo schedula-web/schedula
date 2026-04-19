@@ -11,9 +11,17 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) { }
 
-    async validateUser(email: string, password: string): Promise<any> {
-        // Get user with password field
-        const userWithPassword = await this.userService.findByEmailWithPassword(email);
+    async validateUser(identifier: string, password: string): Promise<any> {
+        let userWithPassword = null;
+
+        // Check if identifier is email (contains @) or schedulaId
+        if (identifier.includes('@')) {
+            // It's an email
+            userWithPassword = await this.userService.findByEmailWithPassword(identifier);
+        } else {
+            // It's a schedulaId
+            userWithPassword = await this.userService.findBySchedulaIdWithPassword(identifier);
+        }
 
         if (!userWithPassword) {
             throw new UnauthorizedException('Invalid credentials');
@@ -33,13 +41,20 @@ export class AuthService {
     }
 
     async login(loginUserDto: LoginUserDto) {
-        const user = await this.validateUser(loginUserDto.email, loginUserDto.password);
+        // Get the identifier (either email or schedulaId)
+        const identifier = loginUserDto.email || loginUserDto.schedulaId;
+
+        if (!identifier) {
+            throw new UnauthorizedException('Please provide either email or schedulaId');
+        }
+
+        const user = await this.validateUser(identifier, loginUserDto.password);
 
         const payload = {
             email: user.email,
             sub: user._id,
             schoolCode: user.schoolCode,
-            schedulaId: user.schedulaId  // Use schedulaId instead of scheduleId
+            schedulaId: user.schedulaId
         };
 
         return {
@@ -51,7 +66,7 @@ export class AuthService {
                 email: user.email,
                 schoolName: user.schoolName,
                 schoolCode: user.schoolCode,
-                schedulaId: user.schedulaId,  // Use schedulaId
+                schedulaId: user.schedulaId,
                 principalName: user.principalName,
                 boardType: user.boardType,
                 phoneNumber: user.phoneNumber,

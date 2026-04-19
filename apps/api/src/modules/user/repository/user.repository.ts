@@ -16,14 +16,12 @@ export class UserRepository {
   ) { }
 
   async create(data: Partial<User>) {
-    // Create a new object to avoid modifying the input
     const userData = { ...data };
 
     // Hash the password
     if (userData.password) {
       const salt = await bcrypt.genSalt(10);
       userData.password = await bcrypt.hash(userData.password, salt);
-      console.log('Password hashed successfully');
     }
 
     // Generate schedulaId
@@ -51,6 +49,14 @@ export class UserRepository {
     return this.userModel.findOne({ email }).select('+password').exec();
   }
 
+  findBySchedulaId(schedulaId: string) {
+    return this.userModel.findOne({ schedulaId }).lean().exec();
+  }
+
+  async findBySchedulaIdWithPassword(schedulaId: string) {
+    return this.userModel.findOne({ schedulaId }).select('+password').exec();
+  }
+
   findBySchoolCode(schoolCode: string) {
     return this.userModel.findOne({ schoolCode }).lean().exec();
   }
@@ -58,7 +64,6 @@ export class UserRepository {
   async update(id: string, data: Partial<User>) {
     this.logger.log(`Updating user with id: ${id}`, 'UserRepository');
 
-    // If password is being updated, hash it
     if (data.password) {
       const salt = await bcrypt.genSalt(10);
       data.password = await bcrypt.hash(data.password, salt);
