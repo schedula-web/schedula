@@ -14,6 +14,6 @@ import { SchedulaIdGeneratorService } from './helpers/schedula-id-generator.serv
   ],
   providers: [UserService, UserRepository, SchedulaIdGeneratorService],
   controllers: [UserController],
-  exports: [UserService]
+  exports: [UserService, UserRepository] // Export both
 })
 export class UserModule { }

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { BaseSchema } from '../../../core/database/base.schema';
 
-@Schema({ versionKey: false })
+@Schema()
 export class User extends BaseSchema {
   @Prop({ required: true, index: true, trim: true })
   schoolName!: string;
@@ -25,7 +25,7 @@ export class User extends BaseSchema {
   password!: string;
 
   @Prop({ unique: true, trim: true })
-  schedulaId!: string; // Add this field
+  schedulaId!: string;  // Keep as schedulaId as you want
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

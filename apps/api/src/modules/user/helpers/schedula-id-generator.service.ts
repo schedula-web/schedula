@@ -31,7 +31,8 @@ export class SchedulaIdGeneratorService {
                 schedulaId: { $regex: /^SID[A-Z]{2}\d{3}$/ }
             })
             .sort({ schedulaId: -1 })
-            .lean();
+            .lean()
+            .exec();
 
         if (!lastUser || !lastUser.schedulaId) {
             return '001';

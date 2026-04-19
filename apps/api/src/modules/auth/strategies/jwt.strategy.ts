@@ -5,23 +5,20 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  // Logic: This 'validate' function runs if the token is mathematically correct
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'secret',
+      secretOrKey: configService.get('JWT_SECRET') || 'your-secret-key-change-this',
     });
   }
 
   async validate(payload: any) {
-    // 1. Logic: Whatever you return here becomes 'request.user'
-    // We extract the role from the token so the RolesGuard can see it later.
     return {
       userId: payload.sub,
       email: payload.email,
-      role: payload.role,   // This is crucial for the RolesGuard!, jump to rolesguard
-      schoolId: payload.schoolId
+      schoolCode: payload.schoolCode,
+      scheduleId: payload.scheduleId
     };
   }
 }

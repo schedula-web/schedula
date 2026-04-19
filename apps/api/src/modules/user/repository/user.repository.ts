@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../schema/user.schema';
 import { AppLogger } from '../../../core/logger/logger.service';
 import { SchedulaIdGeneratorService } from '../helpers/schedula-id-generator.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserRepository {
@@ -15,35 +16,65 @@ export class UserRepository {
   ) { }
 
   async create(data: Partial<User>) {
-    // Generate schedulaId before saving
-    if (data.schoolName && !data.schedulaId) {
-      data.schedulaId = await this.schedulaIdGenerator.generateSchedulaId(data.schoolName);
+    // Create a new object to avoid modifying the input
+    const userData = { ...data };
+
+    // Hash the password
+    if (userData.password) {
+      const salt = await bcrypt.genSalt(10);
+      userData.password = await bcrypt.hash(userData.password, salt);
+      console.log('Password hashed successfully');
     }
 
-    this.logger.log(`Saving user to database: ${data.schoolCode} with schedulaId: ${data.schedulaId}`, 'UserRepository');
-    return this.userModel.create(data);
+    // Generate schedulaId
+    if (userData.schoolName && !userData.schedulaId) {
+      userData.schedulaId = await this.schedulaIdGenerator.generateSchedulaId(userData.schoolName);
+    }
+
+    this.logger.log(`Saving user to database: ${userData.schoolCode} with schedulaId: ${userData.schedulaId}`, 'UserRepository');
+    return this.userModel.create(userData);
   }
 
   findAll() {
-    return this.userModel.find().lean();
+    return this.userModel.find().lean().exec();
   }
 
   findById(id: string) {
-    return this.userModel.findById(id).lean();
+    return this.userModel.findById(id).lean().exec();
   }
 
-  update(id: string, data: Partial<User>) {
+  findByEmail(email: string) {
+    return this.userModel.findOne({ email }).lean().exec();
+  }
+
+  async findByEmailWithPassword(email: string) {
+    return this.userModel.findOne({ email }).select('+password').exec();
+  }
+
+  findBySchoolCode(schoolCode: string) {
+    return this.userModel.findOne({ schoolCode }).lean().exec();
+  }
+
+  async update(id: string, data: Partial<User>) {
     this.logger.log(`Updating user with id: ${id}`, 'UserRepository');
+
+    // If password is being updated, hash it
+    if (data.password) {
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(data.password, salt);
+    }
+
     return this.userModel
       .findByIdAndUpdate(id, data, {
-        returnDocument: 'after',
+        new: true,
         runValidators: true,
       })
-      .lean();
+      .lean()
+      .exec();
   }
 
-  delete(id: string) {
+  async delete(id: string) {
     this.logger.log(`Deleting user with id: ${id}`, 'UserRepository');
-    return this.userModel.findByIdAndDelete(id).lean();
+    return this.userModel.findByIdAndDelete(id).lean().exec();
   }
 }
