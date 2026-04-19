@@ -32,5 +32,5 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  scheduleId?: string;
+  schedulaId?: string;
 }
