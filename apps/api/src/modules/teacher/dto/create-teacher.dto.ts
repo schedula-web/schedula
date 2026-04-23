@@ -3,77 +3,114 @@ import {
   IsNotEmpty,
   IsEmail,
   IsOptional,
-  IsDateString,
-  IsInt,
-  Min,
-  ValidateNested,
   IsArray,
   IsMongoId,
+  IsNumber,
+  IsBoolean,
+  ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TeacherAvailabilityDto } from './teacher-availability.dto';
-import { TeacherSubstitutionSettingsDto } from './teacher-substitution-settings.dto';
-import { TeacherWorkloadRulesDto } from './teacher-workload-rules.dto';
+
+class AvailabilityDto {
+  @IsArray()
+  @IsString({ each: true })
+  workingDays!: string[];
+
+  @IsString()
+  startTime!: string;
+
+  @IsString()
+  endTime!: string;
+
+  @IsNumber()
+  maxPeriodsPerDay!: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  unavailablePeriods?: number[];
+}
+
+class SubstitutionSettingsDto {
+  @IsBoolean()
+  availableForSubstitution!: boolean;
+
+  @IsNumber()
+  maxSubstitutionsPerWeek!: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  preferredSubjectIds?: string[];
+
+  @IsBoolean()
+  avoidConsecutiveSubstitutions!: boolean;
+}
+
+class WorkloadRulesDto {
+  @IsNumber()
+  maxPeriodsPerWeek!: number;
+
+  @IsOptional()
+  @IsString()
+  preferredFreePeriod?: string;
+
+  @IsBoolean()
+  allowExtraLoad!: boolean;
+}
 
 export class CreateTeacherDto {
-  @IsString()
-  @IsNotEmpty()
-  schoolId!: string;
-
   @IsString()
   @IsNotEmpty()
   fullName!: string;
 
   @IsEmail()
-  @IsNotEmpty()
   email!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   phoneNumber?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   employeeId?: string;
 
-  @IsDateString()
   @IsOptional()
-  joiningDate?: string;
+  joiningDate?: Date;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   employmentType?: string;
 
-  @IsInt()
-  @Min(0)
   @IsOptional()
+  @IsNumber()
   experienceYears?: number;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   status?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   notes?: string;
 
-  @ValidateNested()
   @IsOptional()
-  @Type(() => TeacherAvailabilityDto)
-  availability?: TeacherAvailabilityDto;
-
   @ValidateNested()
-  @IsOptional()
-  @Type(() => TeacherSubstitutionSettingsDto)
-  substitutionSettings?: TeacherSubstitutionSettingsDto;
+  @Type(() => AvailabilityDto)
+  availability?: AvailabilityDto;
 
+  @IsOptional()
   @ValidateNested()
-  @IsOptional()
-  @Type(() => TeacherWorkloadRulesDto)
-  workloadRules?: TeacherWorkloadRulesDto;
+  @Type(() => SubstitutionSettingsDto)
+  substitutionSettings?: SubstitutionSettingsDto;
 
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => WorkloadRulesDto)
+  workloadRules?: WorkloadRulesDto;
+
+  @IsOptional()
   @IsArray()
-  @IsOptional()
   @IsMongoId({ each: true })
   subjectIds?: string[];
 }

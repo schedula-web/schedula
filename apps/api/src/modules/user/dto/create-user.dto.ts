@@ -1,6 +1,11 @@
-import { IsString, IsNotEmpty, IsEmail, MinLength, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  MinLength,
+  IsEnum
+} from 'class-validator';
 import { UserRole } from '../../../core/constants/enums';
-
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -31,11 +36,6 @@ export class CreateUserDto {
   @MinLength(6)
   password!: string;
 
-  @IsString()
-  @IsOptional()
-  schedulaId?: string;
-
   @IsEnum(UserRole)
-  @IsNotEmpty()
   role!: UserRole;
 }

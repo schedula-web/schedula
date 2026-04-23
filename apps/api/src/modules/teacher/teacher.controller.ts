@@ -1,43 +1,67 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
-import { AppLogger } from '../../core/logger/logger.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { GetUser } from '../../common/decorators/get-user.decorator';
+import { UserRole } from '../../core/constants/enums';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teachers')
 export class TeacherController {
-  constructor(
-    private readonly service: TeacherService,
-    private readonly logger: AppLogger,
-  ) {}
+  constructor(private readonly teacherService: TeacherService) {}
 
   @Post()
-  create(@Body() dto: CreateTeacherDto) {
-    this.logger.log('POST /teachers', 'TeacherController');
-    return this.service.create(dto);
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  create(
+    @Body() dto: CreateTeacherDto,
+    @GetUser('schedulaId') schedulaId: string,
+  ) {
+    return this.teacherService.create(dto, schedulaId);
   }
 
   @Get()
-  findAll() {
-    this.logger.log('GET /teachers', 'TeacherController');
-    return this.service.findAll();
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  findAll(@GetUser('schedulaId') schedulaId: string) {
+    return this.teacherService.findAll(schedulaId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    this.logger.log(`GET /teachers/${id}`, 'TeacherController');
-    return this.service.findOne(id);
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  findOne(
+    @Param('id') id: string,
+    @GetUser('schedulaId') schedulaId: string,
+  ) {
+    return this.teacherService.findOne(id, schedulaId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTeacherDto) {
-    this.logger.log(`PATCH /teachers/${id}`, 'TeacherController');
-    return this.service.update(id, dto);
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTeacherDto,
+    @GetUser('schedulaId') schedulaId: string,
+  ) {
+    return this.teacherService.update(id, dto, schedulaId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    this.logger.log(`DELETE /teachers/${id}`, 'TeacherController');
-    return this.service.remove(id);
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  remove(
+    @Param('id') id: string,
+    @GetUser('schedulaId') schedulaId: string,
+  ) {
+    return this.teacherService.remove(id, schedulaId);
   }
 }

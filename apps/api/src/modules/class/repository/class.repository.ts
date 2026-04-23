@@ -1,24 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Class } from '../schema/class.schema';
+import { Class, ClassDocument } from '../schema/class.schema';
 
 @Injectable()
 export class ClassRepository {
   constructor(
     @InjectModel(Class.name)
-    private model: Model<Class>,
+    private readonly model: Model<ClassDocument>,
   ) {}
 
-  create(data: any) {
+  // ✅ CREATE
+  create(data: Partial<Class>) {
     return this.model.create(data);
   }
 
-  findAll() {
-    return this.model.find().sort({ createdAt: -1 });
+  // ✅ FIND ONE
+  findOne(filter: Partial<Class>) {
+    return this.model.findOne(filter).lean().exec();
   }
 
-  findById(id: string) {
-    return this.model.findById(id);
+  // ✅ FIND ALL
+  findAll(filter: Partial<Class>) {
+    return this.model.find(filter).lean().exec();
+  }
+
+  // ✅ UPDATE
+  updateByFilter(filter: Partial<Class>, data: Partial<Class>) {
+    return this.model
+      .findOneAndUpdate(filter, data, { new: true })
+      .lean()
+      .exec();
+  }
+
+  // ✅ DELETE
+  deleteByFilter(filter: Partial<Class>) {
+    return this.model
+      .findOneAndDelete(filter)
+      .lean()
+      .exec();
   }
 }

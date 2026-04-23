@@ -1,8 +1,17 @@
-import { IsString, IsNumber, IsArray, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsMongoId,
+  IsArray,
+  IsEnum,
+} from 'class-validator';
+import { WorkingDay, ClassStatus } from '../../../core/constants/enums';
 
 export class CreateClassDto {
-  @IsString()
-  grade!: string;
+
+  @IsNumber()
+  grade!: number;
 
   @IsString()
   section!: string;
@@ -11,8 +20,8 @@ export class CreateClassDto {
   className!: string;
 
   @IsOptional()
-  @IsString()
-  classTeacher?: string;
+  @IsMongoId()
+  classTeacherId?: string;
 
   @IsOptional()
   @IsNumber()
@@ -20,19 +29,17 @@ export class CreateClassDto {
 
   @IsOptional()
   @IsArray()
-  subjects?: string[];
+  subjectIds?: string[];
 
-  @IsOptional()
   @IsArray()
-  workingDays?: string[];
+  @IsEnum(WorkingDay, { each: true })
+  workingDays!: WorkingDay[];
 
-  @IsOptional()
   @IsNumber()
-  periodsPerDay?: number;
+  periodsPerDay!: number;
 
-  @IsOptional()
   @IsNumber()
-  maxPeriodsPerDay?: number;
+  maxPeriodsPerDay!: number;
 
   @IsOptional()
   @IsString()
@@ -43,10 +50,6 @@ export class CreateClassDto {
   classCapacity?: number;
 
   @IsOptional()
-  @IsString()
-  schoolId?: string;
-
-  @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(ClassStatus)
+  status?: ClassStatus;
 }

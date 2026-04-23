@@ -1,26 +1,50 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
+import { UpdateClassDto } from './dto/update-class.dto';
+import { AuthGuard } from '@nestjs/passport';
+import type { Request } from 'express';
 
-@Controller('class')
+@UseGuards(AuthGuard('jwt'))
+@Controller('classes')
 export class ClassController {
-  constructor(private service: ClassService) {}
+  constructor(private readonly service: ClassService) {}
 
-  // 🔥 CREATE CLASS
   @Post()
-  create(@Body() dto: CreateClassDto) {
-    return this.service.create(dto);
+  create(@Body() dto: CreateClassDto, @Req() req: Request) {
+    const user = req.user as any;
+    return this.service.create(dto, user.schedulaId);
   }
 
-  // 🔥 GET ALL
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Req() req: Request) {
+    const user = req.user as any;
+    return this.service.findAll(user.schedulaId);
   }
 
-  // 🔥 GET BY ID
-  @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.service.findById(id);
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateClassDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+    return this.service.update(id, dto, user.schedulaId);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string, @Req() req: Request) {
+    const user = req.user as any;
+    return this.service.delete(id, user.schedulaId);
   }
 }

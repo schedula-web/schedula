@@ -1,15 +1,41 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsMongoId,
+  Min,
+} from 'class-validator';
 
 export class CreateSubjectDto {
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  subjectName!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  code!: string;
+  @IsNumber()
+  @Min(1)
+  periodsPerWeek!: number;
 
-  @IsString()
+  @IsNumber()
+  @Min(1)
+  maxPeriodsPerDay!: number;
+
+  @IsNumber()
+  @Min(1)
+  applicableGrade!: number;
+
   @IsOptional()
-  description?: string;
+  @IsString()
+  subjectCode?: string;
+
+  @IsOptional()
+  @IsNumber()
+  roomNumber?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  teacherIds?: string[];
+
 }

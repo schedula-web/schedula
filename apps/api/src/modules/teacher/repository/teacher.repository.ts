@@ -1,42 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Teacher } from '../schema/teacher.schema';
-import { AppLogger } from '../../../core/logger/logger.service';
+import { Teacher, TeacherDocument } from '../schema/teacher.schema';
 
 @Injectable()
 export class TeacherRepository {
   constructor(
     @InjectModel(Teacher.name)
-    private readonly teacherModel: Model<Teacher>,
-    private readonly logger: AppLogger,
+    private readonly teacherModel: Model<TeacherDocument>,
   ) {}
 
+  // ✅ CREATE
   create(data: Partial<Teacher>) {
-    this.logger.log(`Saving teacher to database: ${data.fullName}`, 'TeacherRepository');
     return this.teacherModel.create(data);
   }
 
-  findAll() {
-    return this.teacherModel.find().populate('schoolId').lean();
+  // ✅ FIND ONE (GENERIC FILTER)
+  findOne(filter: Partial<Teacher>) {
+    return this.teacherModel.findOne(filter).lean().exec();
   }
 
-  findById(id: string) {
-    return this.teacherModel.findById(id).populate('schoolId').lean();
+  // ✅ FIND ALL (GENERIC FILTER)
+  findAll(filter: Partial<Teacher>) {
+    return this.teacherModel.find(filter).lean().exec();
   }
 
-  update(id: string, data: Partial<Teacher>) {
-    this.logger.log(`Updating teacher with id: ${id}`, 'TeacherRepository');
+  // ✅ FIND BY EMAIL (KEEP THIS)
+  findByEmail(email: string, schedulaId: string) {
     return this.teacherModel
-      .findByIdAndUpdate(id, data, {
-        returnDocument: 'after',
+      .findOne({ email: email.toLowerCase(), schedulaId })
+      .lean()
+      .exec();
+  }
+
+  // ✅ UPDATE (SAFE)
+  updateByFilter(filter: Partial<Teacher>, data: Partial<Teacher>) {
+    return this.teacherModel
+      .findOneAndUpdate(filter, data, {
+        new: true,
         runValidators: true,
       })
-      .lean();
+      .lean()
+      .exec();
   }
 
-  delete(id: string) {
-    this.logger.log(`Deleting teacher with id: ${id}`, 'TeacherRepository');
-    return this.teacherModel.findByIdAndDelete(id).lean();
+  // ✅ DELETE (SAFE)
+  deleteByFilter(filter: Partial<Teacher>) {
+    return this.teacherModel
+      .findOneAndDelete(filter)
+      .lean()
+      .exec();
   }
 }
