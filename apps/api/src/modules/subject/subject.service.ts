@@ -9,12 +9,14 @@ import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { Types } from 'mongoose';
 import { TeacherRepository } from '../teacher/repository/teacher.repository';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class SubjectService {
   constructor(
     private readonly subjectRepo: SubjectRepository,
     private readonly teacherRepo: TeacherRepository,
+    private readonly logger: AppLogger,
   ) {}
 
   // 🔥 convert ids safely
@@ -29,6 +31,7 @@ export class SubjectService {
 
   // ✅ CREATE
   async create(dto: CreateSubjectDto, schedulaId: string) {
+    this.logger.log(`Creating subject: ${dto.subjectName} for school: ${schedulaId}`, 'SubjectService');
     // 🔥 VALIDATE TEACHERS
     if (dto.teacherIds?.length) {
       const teacherIds = dto.teacherIds.map(
@@ -54,6 +57,7 @@ const teachers = await this.teacherRepo.findAll({
       });
     } catch (error: any) {
       if (error?.code === 11000) {
+        this.logger.error(`Duplicate key error: ${JSON.stringify(error.keyValue)}`, error.stack, 'SubjectService');
         throw new ConflictException('Subject already exists');
       }
       throw error;
@@ -62,11 +66,13 @@ const teachers = await this.teacherRepo.findAll({
 
   // ✅ GET ALL
   async findAll(schedulaId: string) {
+    this.logger.log(`Fetching all subjects for school: ${schedulaId}`, 'SubjectService');
     return this.subjectRepo.findAll({ schedulaId });
   }
 
   // ✅ GET ONE (SECURE)
   async findOne(id: string, schedulaId: string) {
+    this.logger.log(`Fetching subject with ID: ${id} for school: ${schedulaId}`, 'SubjectService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid subject ID');
     }
@@ -85,6 +91,7 @@ const teachers = await this.teacherRepo.findAll({
 
   // ✅ UPDATE
   async update(id: string, dto: UpdateSubjectDto, schedulaId: string) {
+    this.logger.log(`Updating subject with ID: ${id} for school: ${schedulaId}`, 'SubjectService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid subject ID');
     }
@@ -119,6 +126,7 @@ const teachers = await this.teacherRepo.findAll({
 
   // ✅ DELETE
   async remove(id: string, schedulaId: string) {
+    this.logger.warn(`Deleting subject with ID: ${id} for school: ${schedulaId}`, 'SubjectService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid subject ID');
     }

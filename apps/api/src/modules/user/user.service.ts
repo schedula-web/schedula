@@ -7,12 +7,17 @@ import { UserRepository } from './repository/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRole } from '../../core/constants/enums';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly logger: AppLogger,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
+    this.logger.log(`Creating user with email: ${createUserDto.email}`, 'UserService');
     // ✅ Normalize email
     const email = createUserDto.email.toLowerCase();
 
@@ -45,6 +50,7 @@ export class UserService {
 
   // 🔐 Should be protected
   async findOne(id: string) {
+    this.logger.log(`Fetching user with ID: ${id}`, 'UserService');
     const user = await this.userRepository.findById(id);
 
     if (!user) {
@@ -74,6 +80,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    this.logger.log(`Updating user with ID: ${id}`, 'UserService');
     // ❌ Prevent role override from client
     const { role, ...safeData } = updateUserDto as any;
 
@@ -87,6 +94,7 @@ export class UserService {
   }
 
   async remove(id: string) {
+    this.logger.warn(`Deleting user with ID: ${id}`, 'UserService');
     const user = await this.userRepository.delete(id);
 
     if (!user) {

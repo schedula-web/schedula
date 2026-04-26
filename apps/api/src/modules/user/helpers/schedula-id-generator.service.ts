@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schema/user.schema';
+import { AppLogger } from '../../../core/logger/logger.service';
 
 @Injectable()
 export class SchedulaIdGeneratorService {
     constructor(
         @InjectModel(User.name)
         private readonly userModel: Model<User>,
+        private readonly logger: AppLogger,
     ) { }
 
     async generateSchedulaId(schoolName: string): Promise<string> {
@@ -20,8 +22,9 @@ export class SchedulaIdGeneratorService {
         // Get the next sequence number
         const sequenceNumber = await this.getNextSequenceNumber();
 
-        // Format: SID + nameCode + sequenceNumber (3 digits)
-        return `SID${nameCode}${sequenceNumber}`;
+        const sid = `SID${nameCode}${sequenceNumber}`;
+        this.logger.log(`Generated Schedula ID: ${sid} for school: ${schoolName}`, 'SchedulaIdGeneratorService');
+        return sid;
     }
 
     private async getNextSequenceNumber(): Promise<string> {

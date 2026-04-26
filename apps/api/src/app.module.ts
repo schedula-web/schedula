@@ -13,6 +13,7 @@ import { ClassModule } from './modules/class/class.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 import { SubstitutionModule } from './modules/substitution/substitution.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { TimetableFormatModule } from './modules/timetable-format/timetable-format.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
@@ -57,6 +58,7 @@ import * as path from 'path';
     TimetableModule,
     SubstitutionModule,
     AnalyticsModule,
+    TimetableFormatModule,
   ],
 
   controllers: [AppController],

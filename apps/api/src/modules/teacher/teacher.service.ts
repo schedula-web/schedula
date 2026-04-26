@@ -8,10 +8,14 @@ import { TeacherRepository } from './repository/teacher.repository';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { Types } from 'mongoose';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class TeacherService {
-  constructor(private readonly teacherRepo: TeacherRepository) {}
+  constructor(
+    private readonly teacherRepo: TeacherRepository,
+    private readonly logger: AppLogger,
+  ) {}
 
   // ✅ safe ObjectId conversion
   private toObjectId(id: string) {
@@ -42,6 +46,7 @@ export class TeacherService {
 
   // ✅ CREATE
   async create(dto: CreateTeacherDto, schedulaId: string) {
+    this.logger.log(`Creating teacher with email: ${dto.email} for school: ${schedulaId}`, 'TeacherService');
     const existing = await this.teacherRepo.findOne({
       email: dto.email.toLowerCase(),
       schedulaId,
@@ -60,11 +65,13 @@ export class TeacherService {
 
   // ✅ GET ALL
   findAll(schedulaId: string) {
+    this.logger.log(`Fetching all teachers for school: ${schedulaId}`, 'TeacherService');
     return this.teacherRepo.findAll({ schedulaId });
   }
 
   // ✅ GET ONE
   async findOne(id: string, schedulaId: string) {
+    this.logger.log(`Fetching teacher with ID: ${id} for school: ${schedulaId}`, 'TeacherService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid teacher ID');
     }
@@ -83,6 +90,7 @@ export class TeacherService {
 
   // ✅ UPDATE
   async update(id: string, dto: UpdateTeacherDto, schedulaId: string) {
+    this.logger.log(`Updating teacher with ID: ${id} for school: ${schedulaId}`, 'TeacherService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid teacher ID');
     }
@@ -101,6 +109,7 @@ export class TeacherService {
 
   // ✅ DELETE
   async remove(id: string, schedulaId: string) {
+    this.logger.warn(`Deleting teacher with ID: ${id} for school: ${schedulaId}`, 'TeacherService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid teacher ID');
     }

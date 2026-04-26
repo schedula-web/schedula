@@ -4,12 +4,14 @@ import { UserService } from '../user/user.service';
 import { LoginUserDto } from '../user/dto/login-user.dto';
 import { UserRole } from '../../core/constants/enums';
 import * as bcrypt from 'bcrypt';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
+        private readonly logger: AppLogger,
     ) { }
 
     async validateUser(identifier: string, password: string, role: UserRole): Promise<any> {
@@ -46,6 +48,7 @@ export class AuthService {
 
     async login(loginUserDto: LoginUserDto) {
         const identifier = loginUserDto.email || loginUserDto.schedulaId;
+        this.logger.log(`Login attempt for identifier: ${identifier}`, 'AuthService');
 
         if (!identifier) {
             throw new UnauthorizedException('Please provide either email or schedulaId');

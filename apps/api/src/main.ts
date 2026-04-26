@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -11,11 +12,13 @@ dotenv.config({ path: envPath }); // 🔥 FORCE LOAD ENV FIRST
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { validationPipe } from './common/pipes/validation.pipe';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  console.log('RAW ENV:', process.env.MONGO_URI); // ✅ now should work
+  
+  app.use(json({ limit: '50mb', type: ['application/json', 'text/plain'] }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   app.useGlobalPipes(validationPipe);
 

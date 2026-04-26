@@ -9,6 +9,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import { Types } from 'mongoose';
 import { TeacherRepository } from '../teacher/repository/teacher.repository';
 import { SubjectRepository } from '../subject/repository/subject.repository';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class ClassService {
@@ -16,10 +17,12 @@ export class ClassService {
     private readonly repo: ClassRepository,
     private readonly teacherRepo: TeacherRepository,
     private readonly subjectRepo: SubjectRepository,
+    private readonly logger: AppLogger,
   ) {}
 
   // ✅ CREATE
   async create(dto: CreateClassDto, schedulaId: string) {
+    this.logger.log(`Creating class: ${dto.grade}-${dto.section} for school: ${schedulaId}`, 'ClassService');
     const exists = await this.repo.findOne({
       schedulaId,
       grade: dto.grade,
@@ -87,11 +90,13 @@ export class ClassService {
 
   // ✅ GET ALL
   findAll(schedulaId: string) {
+    this.logger.log(`Fetching all classes for school: ${schedulaId}`, 'ClassService');
     return this.repo.findAll({ schedulaId });
   }
 
   // ✅ UPDATE
   async update(id: string, dto: UpdateClassDto, schedulaId: string) {
+    this.logger.log(`Updating class with ID: ${id} for school: ${schedulaId}`, 'ClassService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid class ID');
     }
@@ -154,6 +159,7 @@ const subjects = await this.subjectRepo.findAll({
 
   // ✅ DELETE
   async delete(id: string, schedulaId: string) {
+    this.logger.warn(`Deleting class with ID: ${id} for school: ${schedulaId}`, 'ClassService');
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid class ID');
     }

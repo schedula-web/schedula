@@ -5,7 +5,10 @@ import { ClassStatus, WorkingDay } from '../../../core/constants/enums';
 
 export type ClassDocument = Class & Document;
 
-@Schema() // ✅ no collection, no timestamps, no versionKey (handled in BaseSchema)
+@Schema({
+  versionKey: false,
+  timestamps: true,
+})
 export class Class extends BaseSchema {
 
   @Prop({ required: true, index: true })

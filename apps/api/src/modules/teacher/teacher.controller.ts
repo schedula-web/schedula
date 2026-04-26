@@ -16,11 +16,15 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { GetUser } from '../../common/decorators/get-user.decorator';
 import { UserRole } from '../../core/constants/enums';
+import { AppLogger } from '../../core/logger/logger.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teachers')
 export class TeacherController {
-  constructor(private readonly teacherService: TeacherService) {}
+  constructor(
+    private readonly teacherService: TeacherService,
+    private readonly logger: AppLogger,
+  ) {}
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
@@ -28,12 +32,14 @@ export class TeacherController {
     @Body() dto: CreateTeacherDto,
     @GetUser('schedulaId') schedulaId: string,
   ) {
+    this.logger.log('POST /teachers - Create Teacher', 'TeacherController');
     return this.teacherService.create(dto, schedulaId);
   }
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   findAll(@GetUser('schedulaId') schedulaId: string) {
+    this.logger.log('GET /teachers - Find All Teachers', 'TeacherController');
     return this.teacherService.findAll(schedulaId);
   }
 
@@ -43,6 +49,7 @@ export class TeacherController {
     @Param('id') id: string,
     @GetUser('schedulaId') schedulaId: string,
   ) {
+    this.logger.log(`GET /teachers/${id} - Find One Teacher`, 'TeacherController');
     return this.teacherService.findOne(id, schedulaId);
   }
 
@@ -53,6 +60,7 @@ export class TeacherController {
     @Body() dto: UpdateTeacherDto,
     @GetUser('schedulaId') schedulaId: string,
   ) {
+    this.logger.log(`PATCH /teachers/${id} - Update Teacher`, 'TeacherController');
     return this.teacherService.update(id, dto, schedulaId);
   }
 
@@ -62,6 +70,7 @@ export class TeacherController {
     @Param('id') id: string,
     @GetUser('schedulaId') schedulaId: string,
   ) {
+    this.logger.warn(`DELETE /teachers/${id} - Remove Teacher`, 'TeacherController');
     return this.teacherService.remove(id, schedulaId);
   }
 }
