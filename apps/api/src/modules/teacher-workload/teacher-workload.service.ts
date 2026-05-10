@@ -3,6 +3,7 @@ import { TeacherWorkloadRepository } from './repository/teacher-workload.reposit
 import { CreateTeacherWorkloadDto } from './dto/create-teacher-workload.dto';
 import { UpdateTeacherWorkloadDto } from './dto/update-teacher-workload.dto';
 import { AppLogger } from '../../core/logger/logger.service';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class TeacherWorkloadService {
@@ -13,8 +14,13 @@ export class TeacherWorkloadService {
 
     create(dto: CreateTeacherWorkloadDto, schedulaId: string) {
         this.logger.log(`Initializing workload for teacher: ${dto.teacherId}`, 'TeacherWorkloadService');
-        return this.repository.create({ ...dto, schedulaId });
+        return this.repository.create({
+            ...dto,
+            schedulaId,
+            teacherId: new Types.ObjectId(dto.teacherId) as any
+        });
     }
+
 
     findAll(schedulaId: string) {
         this.logger.log(`Fetching all workloads for school: ${schedulaId}`, 'TeacherWorkloadService');
