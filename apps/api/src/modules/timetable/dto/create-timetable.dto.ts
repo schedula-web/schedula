@@ -1,9 +1,15 @@
-import { IsString, IsArray } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 
 export class CreateTimetableDto {
-  @IsString()
-  classId!: string;
+    @IsMongoId()
+    @IsNotEmpty()
+    classId!: string;
 
-  @IsArray()
-  schedule!: any[];
+    @IsMongoId()
+    @IsNotEmpty()
+    formatId!: string;
+
+    @IsEnum(['DRAFT', 'ACTIVE'])
+    @IsOptional()
+    status?: 'DRAFT' | 'ACTIVE';
 }

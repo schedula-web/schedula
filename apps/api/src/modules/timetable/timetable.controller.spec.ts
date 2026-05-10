@@ -1,18 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TimetableController } from './timetable.controller';
+import { TimetableService } from './timetable.service';
+import { AppLogger } from '../../core/logger/logger.service';
 
 describe('TimetableController', () => {
-  let controller: TimetableController;
+    let controller: TimetableController;
+    let service: TimetableService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TimetableController],
-    }).compile();
+    const mockService = {
+        createTimetable: jest.fn(),
+        getTimetables: jest.fn(),
+        getTimetableById: jest.fn(),
+        updateTimetable: jest.fn(),
+        deleteTimetable: jest.fn(),
+        createEntry: jest.fn(),
+        getEntriesByTimetable: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+    };
 
-    controller = module.get<TimetableController>(TimetableController);
-  });
+    const mockLogger = {
+        log: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+    };
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [TimetableController],
+            providers: [
+                { provide: TimetableService, useValue: mockService },
+                { provide: AppLogger, useValue: mockLogger },
+            ],
+        }).compile();
+
+        controller = module.get<TimetableController>(TimetableController);
+        service = module.get<TimetableService>(TimetableService);
+    });
+
+    it('should be defined', () => {
+        expect(controller).toBeDefined();
+    });
 });
