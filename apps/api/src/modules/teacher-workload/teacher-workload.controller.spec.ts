@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubstitutionController } from './substitution.controller';
-import { SubstitutionService } from './substitution.service';
+import { TeacherWorkloadController } from './teacher-workload.controller';
+import { TeacherWorkloadService } from './teacher-workload.service';
 import { AppLogger } from '../../core/logger/logger.service';
 
-describe('SubstitutionController', () => {
-    let controller: SubstitutionController;
-    let service: SubstitutionService;
+describe('TeacherWorkloadController', () => {
+    let controller: TeacherWorkloadController;
+    let service: TeacherWorkloadService;
 
     const mockService = {
         create: jest.fn(),
         findAll: jest.fn(),
-        findOne: jest.fn(),
+        findByTeacher: jest.fn(),
         update: jest.fn(),
-        remove: jest.fn(),
     };
 
     const mockLogger = {
@@ -23,15 +22,15 @@ describe('SubstitutionController', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [SubstitutionController],
+            controllers: [TeacherWorkloadController],
             providers: [
-                { provide: SubstitutionService, useValue: mockService },
+                { provide: TeacherWorkloadService, useValue: mockService },
                 { provide: AppLogger, useValue: mockLogger },
             ],
         }).compile();
 
-        controller = module.get<SubstitutionController>(SubstitutionController);
-        service = module.get<SubstitutionService>(SubstitutionService);
+        controller = module.get<TeacherWorkloadController>(TeacherWorkloadController);
+        service = module.get<TeacherWorkloadService>(TeacherWorkloadService);
     });
 
     it('should be defined', () => {

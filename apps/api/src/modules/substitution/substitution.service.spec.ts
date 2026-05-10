@@ -1,18 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubstitutionService } from './substitution.service';
+import { SubstitutionRepository } from './repository/substitution.repository';
+import { AppLogger } from '../../core/logger/logger.service';
 
 describe('SubstitutionService', () => {
-  let service: SubstitutionService;
+    let service: SubstitutionService;
+    let repository: SubstitutionRepository;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [SubstitutionService],
-    }).compile();
+    const mockRepository = {
+        create: jest.fn(),
+        findAll: jest.fn(),
+        findById: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+    };
 
-    service = module.get<SubstitutionService>(SubstitutionService);
-  });
+    const mockLogger = {
+        log: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+    };
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                SubstitutionService,
+                { provide: SubstitutionRepository, useValue: mockRepository },
+                { provide: AppLogger, useValue: mockLogger },
+            ],
+        }).compile();
+
+        service = module.get<SubstitutionService>(SubstitutionService);
+        repository = module.get<SubstitutionRepository>(SubstitutionRepository);
+    });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 });
